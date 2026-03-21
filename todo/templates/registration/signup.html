@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>新規登録</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 w-full max-w-sm">
+        <h1 class="text-xl font-bold text-gray-800 mb-6 text-center">新規登録</h1>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            {% for field in form %}
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">{{ field.label }}</label>
+                    <input type="{{ field.field.widget.input_type }}"
+                            name="{{ field.html_name }}"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                                    focus:outline-none focus:ring-2 focus:ring-blue-300"
+                            {% if field.value %}value="{{ field.value }}"{% endif %}>
+                    {% if field.help_text %}
+                        <p class="text-xs text-gray-400 mt-1">{{ field.help_text }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit"
+                class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium
+                        py-2 rounded-lg transition-colors mt-2">
+                登録する        
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-gray-400 mt-4">
+            すでにアカウントがある方は
+            <a href="/login/" class="text-blue-500 hover:underline">ログイン</a>
+        </p>
+    </div>
+</body>
+</html>

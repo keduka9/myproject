@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todoリスト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <div class="max-w-2xl mx-auto py10 px-4">
+
+        <!-- ヘッダー -->
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">📝 Todoリスト</h1>
+            <div class="flex items-center gap-3 text-sm text-gray-500">
+                <span>{{ request.user.username }}</span>
+                <!-- ログイン中のユーザー名とログアウトボタン -->
+                <form method="POST" action="/logout/">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="text-sm text-blue-500 hover:text-blue-700 underline">
+                        ログアウト
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- タスク追加フォーム -->
+        <form method="POST"
+            class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 mb-6">
+            {% csrf_token %}
+            <div class="flex flex-wrap gap-2">
+                {{ form.title.as_widget }}
+                {{ form.due_date.as_widget }}
+                {{ form.priority.as_widget }}
+                <button type="submit"
+                    class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium
+                        px-4 py-2 rounded-1g transition-colors">
+                    + 追加
+                </button>
+            </div>
+        </form>
+
+        <!-- タスク一覧 -->
+    <ul class="space-y-2">
+        {% for task in tasks %}
+            <li class="bg-white rounded-xl border border-gray-200 shadow-sm
+                    px-4 py-3 flex items-center gap-3
+                    {% if task.done %}done{% endif %}">
+                
+                    <!-- 優先度バッジ -->
+                {% if task.priority == 'high' %}
+                    <span class="text-xs font-bold px-2 py-0.5 rounded-full
+                                bg-red-100 text-red-600">高</span>
+                {% elif task.priority == 'medium' %}
+                    <span class="text-xs font-bold px-2 py-0.5 rounded-full
+                                bg-yellow-100 text-yellow-600">中</span>
+                {% else %}
+                    <span class="text-xs font-bold px-2 py-0.5 rounded-full
+                                bg-green-100 text-green-600">低</span>
+                {% endif %}
+
+                <!-- タスク名 -->
+                <span class="flex-1 text-gray-800 text-sm
+                            {% if task.done %}line-through text-gray-400{% endif %}">
+                            {{ task.title }}
+                </span>
+
+                <!-- 期限 -->
+                {% if task.due_date %}
+                    <span class="text-xs
+                                    {% if task.due_date < today and not task.done %}
+                                        text-red-500 font-bold
+                                    {% else %}
+                                        text-gray-400
+                                    {% endif %}">
+                        {{ task.due_date }}
+                    </span>
+                {% endif %}
+
+                <!-- 完了トグル -->
+                <form method="POST" action="{% url 'toggle_task' task.id %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="text-xs px-3 py-1 rounded-lg border transition-colors
+                            {% if task.done %}
+                                border-gray-300 text-gray-400 hover:bg-gray-50
+                            {% else %}
+                                border-blue-30 text-blue-500 hover:bg-blue-500
+                            {% endif %}">
+                        {% if task.done %}戻す{% else %}完了{% endif %}
+                    </button>
+                </form>
+
+                <!-- 削除　-->
+                <form method="POST" action="{% url 'delete_task' task.id %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="text-xs px-3 py-1 rounded-lg border border-red-200
+                                text-red-400 hover:bg-red-50 transition-colors">
+                        削除
+                    </button>
+                </form>
+            </li>
+            {% empty %}
+                <li class="text-center text-gray-400 text-sm py-12">
+                    タスクがありません。追加してみましょう！
+                </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+</body>
+</html>
