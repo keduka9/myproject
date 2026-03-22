@@ -126,3 +126,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFileStorage'  
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'            # ログイン後のリダイレクト先
 LOGOUT_REDIRECT_URL = '/login/'     # ログアウト後のリダイレクト先
+
+# 本番環境のCSRF設定
+CSRF_TRUSTED_ORIGINS = ['https://myproject-production-c22f.up.railway.app']
